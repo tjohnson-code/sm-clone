@@ -1,3 +1,12 @@
+# Somewhat-Social
+
+Somewhat-Social is a social media clone created, with the help of a tutorial, to explore the capabilities of React and Tailwind CSS.
+
+Using NextAuth - I chose Google as an authentication provider.
+In order to get the login working an env.local file must be created, and a Google ID and Secret must be added.
+
+For more information: check out the [NextAuth.js documentation](https://next-auth.js.org/providers/google).
+
 This is a [Next.js](https://nextjs.org/) project bootstrapped with [`create-next-app`](https://github.com/vercel/next.js/tree/canary/packages/create-next-app).
 
 ## Getting Started
