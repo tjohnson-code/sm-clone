@@ -12,8 +12,11 @@ import {
   UserGroupIcon,
 } from '@heroicons/react/24/solid';
 import HeaderIcon from './HeaderIcon';
+import { signOut, useSession } from 'next-auth/react';
 
 function Header() {
+  const { data: session } = useSession();
+
   return (
     <div className="sticky top-0 z-50 bg-white flex items-center p-2 lg:px-5 shadow-md">
       {/* Left */}
@@ -47,8 +50,17 @@ function Header() {
       {/* Right */}
       <div className="flex items-center sm:space-x-2 justify-end">
         {/* Profile Pic */}
+        <Image
+          onClick={signOut}
+          className="rounded-full cursor-pointer"
+          src={session?.user?.image}
+          width="40"
+          height="40"
+          alt="profile pic"
+        />
+
         <p className="whitespace-nowrap text-orange-500 font-semibold pr-3">
-          User Name
+          {session?.user?.name || 'User Name'}
         </p>
         <Squares2X2Icon className="icon" />
         <ChatBubbleLeftRightIcon className="icon" />

@@ -1,10 +1,11 @@
 import Image from 'next/image';
 import { signIn } from 'next-auth/react';
+
 function Login() {
   return (
     <div className="grid place-items-center">
       <Image
-        className="rounded-2xl"
+        className="rounded-xl mt-6 pb-6"
         src="/images/headerlogo.png"
         width={120}
         height={120}
