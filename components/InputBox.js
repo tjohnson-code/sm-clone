@@ -3,14 +3,21 @@ import { useSession } from 'next-auth/react';
 import { CameraIcon, VideoCameraIcon } from '@heroicons/react/24/solid';
 import { FaceSmileIcon } from '@heroicons/react/24/outline';
 import { useRef, useState } from 'react';
-import { db } from '../firebase';
-import { collection, addDoc, serverTimestamp } from 'firebase/firestore';
+import { db, storage } from '../firebase';
+import {
+  collection,
+  addDoc,
+  serverTimestamp,
+  doc,
+  updateDoc,
+} from 'firebase/firestore';
+import { ref, uploadString, getDownloadURL } from 'firebase/storage';
 
 function InputBox() {
   const { data: session } = useSession();
   const inputRef = useRef(null);
   const filePickerRef = useRef(null);
-  const [imageToPost, setImageToPost] = useState(null);
+  const [mediaToPost, setMediaToPost] = useState(null);
 
   const sendPost = async e => {
     e.preventDefault();
@@ -18,13 +25,27 @@ function InputBox() {
     if (!inputRef.current.value) return;
 
     try {
-      await addDoc(collection(db, 'posts'), {
+      const docRef = await addDoc(collection(db, 'posts'), {
         message: inputRef?.current?.value,
         name: session?.user?.name,
         email: session?.user?.email,
         image: session?.user?.image,
         timestamp: serverTimestamp(),
       });
+
+      if (mediaToPost) {
+        const storageRef = ref(storage, `posts/${docRef.id}`);
+        const uploadTask = uploadString(storageRef, mediaToPost, 'data_url');
+
+        removeMedia();
+
+        uploadTask.then(() => {
+          getDownloadURL(storageRef).then(url => {
+            const postRef = doc(db, 'posts', docRef.id);
+            updateDoc(postRef, { postImage: url });
+          });
+        });
+      }
     } catch (e) {
       console.error('Error adding document: ', e);
     }
@@ -32,8 +53,30 @@ function InputBox() {
     inputRef.current.value = '';
   };
 
-  const addImageToPost = e => {
+  const addMediaToPost = e => {
     e.preventDefault();
+
+    const file = e.target.files[0];
+    if (!file) return;
+
+    const isImage = file.type.startsWith('image/');
+    const isVideo = file.type.startsWith('video/');
+
+    if (!isImage && !isVideo) {
+      alert('Please select an image or video file.');
+      return;
+    }
+
+    const reader = new FileReader();
+    reader.readAsDataURL(file);
+
+    reader.onload = readerEvent => {
+      setMediaToPost(readerEvent.target.result);
+    };
+  };
+
+  const removeMedia = () => {
+    setMediaToPost(null);
   };
 
   return (
@@ -57,6 +100,16 @@ function InputBox() {
             Submit
           </button>
         </form>
+
+        {mediaToPost && (
+          <div
+            onClick={removeMedia}
+            className="flex flex-col filter hover:brightness-110 transition duration-150 transform hover:scale-105 cursor-pointer"
+          >
+            <img className="h-10 object-contain" src={mediaToPost} alt="" />
+            <p></p>
+          </div>
+        )}
       </div>
       <div className="flex justify-evenly p-3 border-t">
         <div className="inputIcon">
@@ -72,7 +125,7 @@ function InputBox() {
           <p className="text-xs sm:text-sm xl:text-base">Upload Media</p>
           <input
             ref={filePickerRef}
-            onChange={addImageToPost}
+            onChange={addMediaToPost}
             type="file"
             hidden
           />
