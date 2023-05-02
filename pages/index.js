@@ -4,6 +4,7 @@ import Login from '@/components/Login';
 import Sidebar from '@/components/Sidebar';
 import Feed from '@/components/Feed';
 import { useSession } from 'next-auth/react';
+import Widgets from '@/components/Widgets';
 
 export default function Home() {
   const { data: session, status } = useSession();
@@ -20,11 +21,9 @@ export default function Home() {
       <Header />
 
       <main className="flex">
-        {/* Sidebar */}
         <Sidebar />
-        {/* Feed */}
         <Feed />
-        {/* Contacts */}
+        <Widgets />
       </main>
     </div>
   );

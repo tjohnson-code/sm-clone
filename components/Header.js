@@ -22,16 +22,16 @@ function Header() {
       {/* Left */}
       <div className="flex items-center">
         <Image
-          className="rounded-2xl"
+          className="bg-fixed rounded-2xl"
           src="/images/headerlogo.png"
           width={40}
           height={40}
           alt="logo"
         />
         <div className="flex ml-2 items-center rounded-full bg-gray-700 p-2">
-          <MagnifyingGlassIcon className="h-6 text-orange-500" />
+          <MagnifyingGlassIcon className="h-6 text-orange-500 cursor-pointer" />
           <input
-            className="hidden text-orange-500 md:inline-flex ml-2 items-center bg-transparent outline-none placeholder-orange-500 shrink"
+            className="hidden text-orange-500 lg:inline-flex ml-2 items-center bg-transparent outline-none placeholder-orange-500 flex-shrink"
             type="text"
             placeholder="Search this bar"
           />
